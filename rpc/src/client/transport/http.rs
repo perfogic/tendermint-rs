@@ -10,6 +10,7 @@ use reqwest::{header, Proxy};
 
 use tendermint::{block::Height, evidence::Evidence, Hash};
 use tendermint_config::net;
+use tracing::info;
 
 use super::auth;
 use crate::prelude::*;
@@ -185,11 +186,11 @@ impl HttpClient {
         let response_status = response.status();
         let response_body = response.bytes().await.map_err(Error::http)?;
 
-        // tracing::debug!(
-        //     status = %response_status,
-        //     body = %String::from_utf8_lossy(&response_body),
-        //     "incoming response"
-        // );
+        tracing::debug!(
+            status = %response_status,
+            body = %String::from_utf8_lossy(&response_body),
+            "incoming response"
+        );
 
         // Successful JSON-RPC requests are expected to return a 200 OK HTTP status.
         // Otherwise, this means that the HTTP request failed as a whole,
@@ -199,7 +200,10 @@ impl HttpClient {
             return Err(Error::http_request_failed(response_status));
         }
 
-        R::Response::from_string(&response_body).map(Into::into)
+        info!("Response body: {:?}", response_body);
+        let data: Result<<R as SimpleRequest<S>>::Output, Error> =
+            R::Response::from_string(&response_body).map(Into::into);
+        data
     }
 }
 

@@ -39,6 +39,7 @@ pub trait Request<S: Dialect = LatestDialect>: RequestMessage + Send {
 /// simple, singular response.
 ///
 /// [`Subscription`]: struct.Subscription.html
+#[derive(Debug)]
 pub trait SimpleRequest<S: Dialect = LatestDialect>: Request<S> {
     /// The output data, converted from Response.
     type Output: From<Self::Response>;
