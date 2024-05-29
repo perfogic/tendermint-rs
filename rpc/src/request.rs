@@ -20,7 +20,9 @@ pub trait RequestMessage: DeserializeOwned + Serialize + Sized {
 
     /// Parse a JSON-RPC request from a JSON string.
     fn from_string(s: impl AsRef<[u8]>) -> Result<Self, Error> {
-        let wrapper: Wrapper<Self> = serde_json::from_slice(s.as_ref()).map_err(Error::serde)?;
+        let wrapper: Wrapper<Self> =
+            serde_json::from_slice(String::from_utf8_lossy(s.as_ref()).as_bytes())
+                .map_err(Error::serde)?;
         Ok(wrapper.params)
     }
 }
@@ -39,7 +41,6 @@ pub trait Request<S: Dialect = LatestDialect>: RequestMessage + Send {
 /// simple, singular response.
 ///
 /// [`Subscription`]: struct.Subscription.html
-#[derive(Debug)]
 pub trait SimpleRequest<S: Dialect = LatestDialect>: Request<S> {
     /// The output data, converted from Response.
     type Output: From<Self::Response>;
