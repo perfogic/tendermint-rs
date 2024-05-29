@@ -21,8 +21,7 @@ pub trait RequestMessage: DeserializeOwned + Serialize + Sized {
     /// Parse a JSON-RPC request from a JSON string.
     fn from_string(s: impl AsRef<[u8]>) -> Result<Self, Error> {
         let wrapper: Wrapper<Self> =
-            serde_json::from_slice(String::from_utf8_lossy(s.as_ref()).as_bytes())
-                .map_err(Error::serde)?;
+            serde_json::from_str(&String::from_utf8_lossy(s.as_ref())).map_err(Error::serde)?;
         Ok(wrapper.params)
     }
 }
