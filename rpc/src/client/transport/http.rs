@@ -185,11 +185,11 @@ impl HttpClient {
         let response_status = response.status();
         let response_body = response.bytes().await.map_err(Error::http)?;
 
-        tracing::debug!(
-            status = %response_status,
-            body = %String::from_utf8_lossy(&response_body),
-            "incoming response"
-        );
+        // tracing::debug!(
+        //     status = %response_status,
+        //     body = %String::from_utf8_lossy(&response_body),
+        //     "incoming response"
+        // );
 
         // Successful JSON-RPC requests are expected to return a 200 OK HTTP status.
         // Otherwise, this means that the HTTP request failed as a whole,
